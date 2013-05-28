@@ -32,7 +32,7 @@ POST is not successful.
 Calls During Backoff Period
 ---------------------------
 
-Any calls made during the backoff period will raise an InBackoff exception.
+Any calls made during the backoff period will raise an `InBackoff` exception.
 
 
 Setting Maximum Backoff
