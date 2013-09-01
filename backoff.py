@@ -3,7 +3,15 @@ Module that implements exponential backoff as a decorator
 """
 import logging
 import logging.handlers as handlers
+import os
+import sys
 import time
+
+if sys.platform == 'darwin':
+    SYSLOG_PATH = '/var/run/syslog'
+else:
+    SYSLOG_PATH = '/dev/log'
+
 
 class InBackoff(Exception):
     """
@@ -22,8 +30,12 @@ class Backoff(object):
         self.logger = logging.getLogger('Backoff')
         self.logger.setLevel(log_level)
         
-        # setup logger to go to syslog
-        handler = handlers.SysLogHandler(address='/dev/log')
+        # setup logger to go to syslog, fallback to stderr
+        if os.path.exists(SYSLOG_PATH):
+            handler = handlers.SysLogHandler(address=SYSLOG_PATH)
+        else:
+            handler = handlers.StreamHandler()
+
         self.logger.addHandler(handler)
 
     def __call__(self, func):
