@@ -22,12 +22,14 @@ class InBackoff(Exception):
 
 
 class Backoff(object):
-    def __init__(self, max_backoff=3600, log_level=logging.INFO):
+    def __init__(self, max_backoff=3600, log_level=logging.INFO, silent_backoff=False):
         self.func = None
 
         self.max_backoff = max_backoff
         self.backoff_time = None
         self.start_time = None
+
+        self.silent_backoff = silent_backoff
 
         self.logger = logging.getLogger('Backoff')
         self.logger.setLevel(log_level)
@@ -55,6 +57,9 @@ class Backoff(object):
 
             if elapsed < self.backoff_time:
                 self.logger.debug('elapsed time less than backoff time ({} < {})'.format(elapsed, self.backoff_time))
+
+                if self.silent_backoff:  # return None if silent_backoff is enabled
+                    return
 
                 raise InBackoff('start_time={}, elapsed={}, backoff_time={}'.format(
                     self.start_time, elapsed, self.backoff_time))
