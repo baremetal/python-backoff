@@ -7,6 +7,8 @@ import os
 import sys
 import time
 
+from functools import wraps
+
 if sys.platform == 'darwin':
     SYSLOG_PATH = '/var/run/syslog'
 else:
@@ -41,6 +43,7 @@ class Backoff(object):
     def __call__(self, func):
         self.func = func
 
+        @wraps(func)
         def wrapped(*args, **kwargs):
             return self._backoff(*args, **kwargs)
 
